@@ -136,4 +136,35 @@ const logoutController = async(req,res)=>{
     }
 }
 
-module.exports = {registerController,loginController,logoutController}
+const getMeController = async (req, res) => {
+    try{
+        const userId = req.user.id;
+        const user = await userModel.findById(userId).select("-password");
+        if(!user){
+            return res.status(404).json({
+                success:false,
+                message:"User not found"
+            })
+        }
+
+        res.status(200).json({
+            success:true,
+            message:"User fetched successfully",
+            user:{
+                userId:user._id,
+                username:user.username,
+                email:user.email,
+            }
+        })
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({
+            success:false,
+            message:"Error in getMeController",
+            err:err.message
+        })
+    }
+}
+
+module.exports = {registerController,loginController,logoutController,getMeController}
